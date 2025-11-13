@@ -13,5 +13,6 @@
         "base"
     ],
     "data": [
+        "security/helpdesk_security.xml"
     ],
 }
