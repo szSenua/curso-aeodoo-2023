@@ -13,6 +13,7 @@
         "base"
     ],
     "data": [
-        "security/helpdesk_security.xml"
+        "security/helpdesk_security.xml",
+        "security/ir.model.access.csv"
     ],
 }
