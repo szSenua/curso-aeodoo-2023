@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Action: defines what happens when you click the menu -->
+    <record id="helpdesk_ticket_action" model="ir.actions.act_window">
+        <!-- Title displayed at the top when opening this window -->
+        <field name="name">Helpdesk Tickets</field>
+        
+        <!-- Action type: opens a window with views -->
+        <field name="type">ir.actions.act_window</field>
+        
+        <!-- Data model to be displayed -->
+        <field name="res_model">helpdesk.ticket</field>
+        
+        <!-- Available views: list first, then form -->
+        <!-- Odoo 18 uses "list" instead of "tree" -->
+        <field name="view_mode">list,form</field>
+        
+        <!-- Message displayed when there are no tickets created -->
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new ticket
+            </p>
+        </field>
+    </record>
+    
+    <!-- Main menu displayed in the top navigation bar -->
+    <menuitem id="helpdesk_menu" name="Helpdesk" sequence="10"/>
+    
+    <!-- Submenu inside Helpdesk that executes the action -->
+    <menuitem id="helpdesk_ticket_open" 
+              name="Tickets" 
+              sequence="10" 
+              parent="helpdesk_menu" 
+              action="helpdesk_ticket_action"/>
+</odoo>
