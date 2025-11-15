@@ -1,6 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
+
+    <record id="view_helpdesk_ticket_form" model="ir.ui.view">
+        <field name="name">view_helpdesk_ticket_form</field>
+        <field name="model">helpdesk.ticket</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <field name="state" widget="statusbar" statusbar_visible="new,assigned,in_process,pending,resolved" />
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" />
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="date" optional="show" />
+                            <field name="date_limit" optional="hide" />
+                        </group>
+                        <group>
+                            <field name="user_id"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page name="description" string="Description">
+                        <!-- <label for="description" string="Description" /> -->
+                            <field name="description" />
+                        </page>
+                        <page name="to_do" string="To Do">
+                        <!-- <label for="actions_todo" string="To Do" /> -->
+                            <field name="actions_todo" />
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
     <record id="view_helpdesk_ticket_list" model="ir.ui.view">
     <field name="name">view_helpdesk_ticket_list</field>
     <field name="model">helpdesk.ticket</field>
@@ -30,10 +69,10 @@
                 icon="fa-external-link"
                 class="oe_link"
                 string="Open"/>
-        </list>
-    </field>
-
+            </list>
+        </field>
     </record>
+
     <!-- Action: defines what happens when you click the menu -->
     <record id="helpdesk_ticket_action" model="ir.actions.act_window">
         <!-- Title displayed at the top when opening this window -->
