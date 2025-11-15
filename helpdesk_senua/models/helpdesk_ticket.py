@@ -8,7 +8,10 @@ class HelpdeskTicket(models.Model):
     _description = 'Helpdesk Ticket'
     
     # Nombre -> Char -> single-line text
-    name = fields.Char()
+    name = fields.Char(
+        required=True,
+        help='Resume the title'
+    )
 
     # Descripción - > Text -> multi-line text
     description = fields.Text()
@@ -20,8 +23,22 @@ class HelpdeskTicket(models.Model):
     date_limit = fields.Datetime('Limit Date & Time')
 
     # Asignado (Verdadero o Falso)
-    assigned = fields.Boolean()
+    assigned = fields.Boolean(
+        readonly=True
+    )
     user_id = fields.Many2one('res.users', string='Assigned_to')
 
     # Acciones a realizar
     actions_todo = fields.Html()
+
+    # Añadir el campo Estado [Nuevo, Asignado, En proceso, Pendiente, Resuelto, Cancelado], que por defecto sea Nuevo
+    state = fields.Selection([
+        ('new', 'New'),
+        ('assigned', 'Assigned'),
+        ('in_process', 'In Process'),
+        ('pending', 'Pending'),
+        ('resolved', 'Resolved'),
+        ('canceled', 'Canceled')
+        ],
+    default= 'new',
+    )
