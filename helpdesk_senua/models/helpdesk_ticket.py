@@ -21,6 +21,7 @@ class HelpdeskTicket(models.Model):
 
     # Asignado (Verdadero o Falso)
     assigned = fields.Boolean()
+    user_id = fields.Many2one('res.users', string='Assigned_to')
 
     # Acciones a realizar
     actions_todo = fields.Html()

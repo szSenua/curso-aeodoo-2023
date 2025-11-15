@@ -18,4 +18,36 @@
     <field name="users" eval="[(4, ref('base.user_admin'))]"/>
 </record>
 
+<record id="helpdesk_ticket_personal_rule" model="ir.rule">
+    <!-- Rule name shown in Odoo -->
+    <field name="name">Personal Ticket</field>
+
+    <!-- Applies this rule to the helpdesk.ticket model -->
+    <field ref="model_helpdesk_ticket" name="model_id"/>
+
+    <!-- Users can only see tickets where they are the assigned user -->
+    <field name="domain_force">[('user_id','=',user.id)]</field>
+
+    <!-- This rule applies only to the Helpdesk User group -->
+    <field name="groups" eval="[(4, ref('res_groups_helpdesk_user'))]"/>
+</record>
+
+
+<!-- We add this rule because previously the manager had the same permissions
+     as regular users, and therefore could only see the same limited records. -->
+
+<record id="helpdesk_ticket_all_rule" model="ir.rule">
+    <!-- Rule name shown in Odoo -->
+    <field name="name">All Ticket</field>
+
+    <!-- Applies this rule to the helpdesk.ticket model -->
+    <field ref="model_helpdesk_ticket" name="model_id"/>
+
+    <!-- Always true: allows access to all tickets -->
+    <field name="domain_force">[(1,'=', 1)]</field>
+
+    <!-- This rule applies only to the Helpdesk Manager group -->
+    <field name="groups" eval="[(4, ref('res_groups_helpdesk_manager'))]"/>
+</record>
+
 </odoo>
