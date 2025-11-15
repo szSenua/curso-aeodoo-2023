@@ -1,5 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+
+    <record id="view_helpdesk_ticket_list" model="ir.ui.view">
+    <field name="name">view_helpdesk_ticket_list</field>
+    <field name="model">helpdesk.ticket</field>
+    <field name="arch" type="xml">
+    <!-- Odoo 18: widget="handle" works only on editable lists with sequence field and write access -->
+        <list string="Tickets" editable="bottom" default_order="sequence">
+            <!-- Añadir campo sequence y hacer el widget handle.-->
+            <field name="sequence" widget="handle"/>
+            <!-- Mostrar campo nombre-->
+            <field name="name"/>
+            <!-- Mostrar user asignado-->
+            <field name="user_id"/>
+            <!-- El campo fecha que sea opcional y mostrarlo por defecto..-->
+            <field name="date" optional="show" />
+            <!-- El campo fecha limite que sea opcional mostrarlo y ocultarlo por defecto.-->
+            <field name="date_limit" optional="hide" />
+              <!-- Mostrar estado-->
+            <field name="state"/>
+        </list>
+    </field>
+
+    </record>
     <!-- Action: defines what happens when you click the menu -->
     <record id="helpdesk_ticket_action" model="ir.actions.act_window">
         <!-- Title displayed at the top when opening this window -->

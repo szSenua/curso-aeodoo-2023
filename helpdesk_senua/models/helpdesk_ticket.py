@@ -13,6 +13,12 @@ class HelpdeskTicket(models.Model):
         help='Resume the title'
     )
 
+    # Secuencia
+    sequence = fields.Integer(
+        default=10,
+        help='Secuencia para el orden de las incidencias'
+    )
+
     # Descripción - > Text -> multi-line text
     description = fields.Text()
 
