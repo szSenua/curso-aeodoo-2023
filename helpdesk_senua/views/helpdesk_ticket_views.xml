@@ -17,8 +17,19 @@
             <field name="date" optional="show" />
             <!-- El campo fecha limite que sea opcional mostrarlo y ocultarlo por defecto.-->
             <field name="date_limit" optional="hide" />
-              <!-- Mostrar estado-->
+            <!-- Mostrar estado-->
             <field name="state"/>
+            <!-- Button used to open the form view since editable list rows cannot be clicked to open
+                name: method to call on the model
+                type: executes a server-side Python method
+                icon: displays an external-link icon in the column
+                class: makes the button behave like a link (avoids edit-in-row conflicts)
+                string: label shown in the list view -->
+            <button name="action_open_form"
+                type="object"
+                icon="fa-external-link"
+                class="oe_link"
+                string="Open"/>
         </list>
     </field>
 

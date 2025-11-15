@@ -48,3 +48,14 @@ class HelpdeskTicket(models.Model):
         ],
     default= 'new',
     )
+
+    # Provides the action used by the list-view button to open the record in form mode
+    def action_open_form(self):
+        """Open the form view of the selected ticket."""
+        return {
+            'type': 'ir.actions.act_window',   # Tells Odoo to open a window action
+            'res_model': 'helpdesk.ticket',    # Model to open (this model)
+            'res_id': self.id,                 # ID of the specific record clicked
+            'view_mode': 'form',               # Open the record in form view
+            'target': 'current',               # Replace the current screen (not open a popup)
+    }
