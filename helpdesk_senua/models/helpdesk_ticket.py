@@ -58,4 +58,26 @@ class HelpdeskTicket(models.Model):
             'res_id': self.id,                 # ID of the specific record clicked
             'view_mode': 'form',               # Open the record in form view
             'target': 'current',               # Replace the current screen (not open a popup)
-    }
+        }
+    
+    # Method to update a ticket's description
+    def update_description(self):
+        self.write({'description':"UPDATED"})
+
+    # Many to many field
+    tag_ids = fields.Many2many(
+        'helpdesk.ticket.tag', 
+        # relation='helpdesk_ticket_tag_rel',
+        # column1='ticket_id',
+        # column2='tag_id',
+        string='Tags')
+
+    # One to many field
+    action_ids = fields.One2many(
+        'helpdesk.ticket.action', 
+        'ticket_id', 
+        string='Actions')
+    
+    def set_actions_as_done(self):
+        self.ensure_one()
+        self.action_ids.set_done()
