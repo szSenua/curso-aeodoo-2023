@@ -106,6 +106,28 @@
         </field>
     </record>
 
+    <!-- Search View -->
+    <!-- Añadir vista search:
+  - filtrar por nombre y por usuario asignado
+  - filtrar tickets asignados
+  - filtrar tickets sin date_due
+  - agrupar por date_due
+  - agrupar por usuario asignado -->
+    <record id="view_helpdesk_ticket_search" model="ir.ui.view">
+        <field name="name">view_helpdesk_ticket_search</field>
+        <field name="model">helpdesk.ticket</field>
+        <field name="arch" type="xml">
+            <search string="Tickets">
+            <field name="name" />
+            <field name="user_id" />
+            <filter name="filter_to_assigned" string="Assigned" domain="[('assigned', '=', 'True')]" />
+            <filter name="filter_no_date" string="No date" domain="[('date', '=', False)]" />
+            <filter name="date" string="Date" context="{'group_by': 'date'}" />
+            <filter name="user" string="User" context="{'group_by': 'user_id'}" />
+            </search>
+        </field>
+    </record>
+
     <!-- Action: defines what happens when you click the menu -->
     <record id="helpdesk_ticket_action" model="ir.actions.act_window">
         <!-- Title displayed at the top when opening this window -->
