@@ -19,6 +19,7 @@
                         <group>
                             <field name="date" optional="show" />
                             <field name="date_limit" optional="hide" />
+                            <field name="amount_time" widget="float_time"/>
                         </group>
                         <group>
                             <field name="user_id" />
@@ -127,6 +128,21 @@
                 <filter name="date" string="Date" context="{'group_by': 'date'}" />
                 <filter name="user" string="User" context="{'group_by': 'user_id'}" />
             </search>
+        </field>
+    </record>
+
+    
+    <!-- Añadir vista pivot a la acción.
+    mostrar tiempo dedicado por usuario / mes -->
+    <record id="helpdesk_ticket_pivot" model="ir.ui.view">
+        <field name="name">helpdesk_ticket_pivot</field>
+        <field name="model">helpdesk.ticket</field>
+        <field name="arch" type="xml">
+            <pivot string="Tickets" disable_linking="true">
+                <field name="user_id" type="row" />
+                <field name="date" interval="month" type="col" />
+                <field name="amount_time" type="measure" widget="float_time" />
+            </pivot>
         </field>
     </record>
 
@@ -267,7 +283,7 @@
 
         <!-- Available views: list first, then form -->
         <!-- Odoo 18 uses "list" instead of "tree" -->
-        <field name="view_mode">kanban,list,form</field>
+        <field name="view_mode">pivot,kanban,list,form</field>
 
         <!-- Message displayed when there are no tickets created -->
         <field name="help" type="html">
