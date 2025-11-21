@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-
-
     <record id="view_helpdesk_ticket_form" model="ir.ui.view">
         <field name="name">view_helpdesk_ticket_form</field>
         <field name="model">helpdesk.ticket</field>
@@ -136,7 +134,7 @@
   - mostrar en tarjeta usuario y tiempo dedicado
   - agrupar por usuario
   - extra: añadir un field color, para cambiar el color de la tarjeta, ver como está hecho en
-    crm.lead -->
+    crm.lead 
     <record id="helpdesk_ticket_kanban" model="ir.ui.view">
         <field name="name">helpdesk_ticket.kanban</field>
         <field name="model">helpdesk.ticket</field>
@@ -148,9 +146,10 @@
                 <field name="user_id" />
                 <templates>
                     <t t-name="kanban-box">
-                        <!-- Color selector for the card -->
+                        Color selector for the card 
                         <div
-                            t-attf-class="#{!selection_mode ? kanban_color(record.color.raw_value) : ''} #{lost_ribbon ? 'oe_kanban_card_ribbon' : ''} oe_kanban_global_click oe_kanban_card d-flex flex-column">
+                            t-attf-class="#{!selection_mode ? kanban_color(record.color.raw_value) : ''} #{lost_ribbon ?
+    'oe_kanban_card_ribbon' : ''} oe_kanban_global_click oe_kanban_card d-flex flex-column">
                             <div class="o_dropdown_kanban dropdown">
                                 <a class="dropdown-toggle o-no-caret btn" role="button"
                                     data-bs-toggle="dropdown" data-bs-display="static" href="#"
@@ -168,8 +167,8 @@
                                     <ul class="oe_kanban_colorpicker" data-field="color" />
                                 </div>
                             </div>
-                            <!-- Con la versión 18 no es necesario global click para poder clicar dentro
-                            de la tarjeta -->
+                            Con la versión 18 no es necesario global click para poder clicar dentro
+                            de la tarjeta 
                             <div
                                 class="oe_kanban_content flex-grow-1">
                                 <strong class="o_kanban_record_title oe_partner_heading">
@@ -181,20 +180,73 @@
                                     </li>
                                 </ul>
                             </div>
-                            <!-- footer with activities -->
+                            footer with activities 
                             <div class="oe_kanban_footer">
                                 <div class="o_kanban_record_bottom">
-                                    <!-- <div class="oe_kanban_bottom_left">
+                                    <div class="oe_kanban_bottom_left">
                                         <field name="priority" widget="priority" groups="base.group_user"/>
                                         <field name="activity_ids" widget="kanban_activity"/>
-                                    </div> -->
+                                    </div> 
 
-                                    <!-- Shows user avatar -->
+                                     Shows user avatar 
                                     <div class="oe_kanban_bottom_right">
                                         <field name="user_id" widget="many2one_avatar_user" />
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record> -->
+
+    <!-- UPGRADED KANBAN VIEW - ODOO 18 MODERN STRUCTURE -->
+    <record id="helpdesk_ticket_kanban" model="ir.ui.view">
+        <field name="name">helpdesk_ticket.kanban</field>
+        <field name="model">helpdesk.ticket</field>
+        <field name="arch" type="xml">
+            <kanban highlight_color="color" default_group_by="user_id" class="o_kanban_small_column">
+                <field name="name" />
+                <field name="date" />
+                <field name="color" />
+                <field name="user_id" />
+                <templates>
+                    <!-- Color picker -->
+                    <t t-name="menu">
+                        <t t-if="widget.editable">
+                            <a role="menuitem" type="edit" class="dropdown-item">Edit</a>
+                        </t>
+                        <t t-if="widget.deletable">
+                            <a role="menuitem" type="delete" class="dropdown-item">Delete</a>
+                        </t>
+                        <field name="color" widget="kanban_color_picker" />
+                    </t>
+                    <!-- Card -->
+                    <t t-name="card">
+                        <div class="oe_kanban_content">
+                            <!-- Title -->
+                            <field name="name" class="fw-bold fs-5" />
+
+                            <!-- Date -->
+                            <div class="text-muted mt-2">
+                                <i class="fa fa-calendar me-1" />
+                                <field name="date" />
+                            </div>
+
+                            <!-- Footer with avatar -->
+                            <footer class="pt-3 mt-auto">
+                                <div class="d-flex align-items-center">
+                                    <div class="flex-grow-1">
+                                        <!-- Aquí puedes agregar prioridad o actividades -->
+                                        <!-- <field name="priority" widget="priority"
+                                        groups="base.group_user" class="me-2"/> -->
+                                        <!-- <field name="activity_ids" widget="kanban_activity"/> -->
+                                    </div>
+                                    <field name="user_id" widget="many2one_avatar_user"
+                                        class="ms-auto" />
+                                </div>
+                            </footer>
                         </div>
                     </t>
                 </templates>
