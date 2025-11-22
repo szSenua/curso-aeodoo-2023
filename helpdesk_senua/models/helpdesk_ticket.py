@@ -87,3 +87,9 @@ class HelpdeskTicket(models.Model):
     amount_time = fields.Float(
         string='Amount of Time'
     )
+
+    # Test domain
+    person_id = fields.Many2one('res.partner', 
+    string='Person ID',
+    domain=[('is_company', '=', False)]
+    )

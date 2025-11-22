@@ -23,6 +23,7 @@
                         </group>
                         <group>
                             <field name="user_id" />
+                            <field name="person_id" />
                             <field name="tag_ids" widget="many2many_tags" />
                         </group>
                     </group>
