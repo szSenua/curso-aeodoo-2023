@@ -1,4 +1,5 @@
-from odoo import fields, models
+from odoo import api, Command, fields, models
+from odoo.exceptions import UserError
 
 # Defines a new class (model) that represents a database table in Odoo
 class HelpdeskTicket(models.Model):
@@ -29,9 +30,9 @@ class HelpdeskTicket(models.Model):
     date_limit = fields.Datetime('Limit Date & Time')
 
     # Asignado (Verdadero o Falso)
-    assigned = fields.Boolean(
-        readonly=True
-    )
+    # assigned = fields.Boolean(
+    #     readonly=True
+    # )
     user_id = fields.Many2one('res.users', string='Assigned_to')
 
     # Acciones a realizar
@@ -93,3 +94,117 @@ class HelpdeskTicket(models.Model):
     string='Person ID',
     domain=[('is_company', '=', False)]
     )
+
+    # Hacer que el campo assigned sea calculado, 
+    # Hacer que se pueda busca con el atributo search 
+    # Hacer que se pueda modificar de forma que si lo marco se actualice el usuario con el usuario conectado
+    # si lo desmarco se limpie el campo del usuario
+    assigned = fields.Boolean(
+        compute='_compute_assigned', 
+        string='assigned',
+        search='_search_assigned',
+        inverse='_inverse_assigned',
+    )
+    
+    @api.depends('user_id')
+    def _compute_assigned(self):
+        
+        # Método compute que calcula el valor del campo 'assigned'
+        # basándose en si existe o no un usuario asignado
+        
+
+        # Itera sobre cada registro del recordset
+        for record in self:
+            # Asigna True al campo 'assigned' si user_id tiene un valor (no es False/None)
+            # Asigna False si user_id está vacío
+            record.assigned = bool(record.user_id)
+
+    def _search_assigned(self, operator, value):
+        
+        # Método search personalizado para el campo 'assigned'
+        # Permite buscar registros usando el campo computed 'assigned'
+        # en filtros y búsquedas de Odoo
+    
+        # Args:
+        #     operator: operador de búsqueda ('=', '!=', etc.)
+        #     value: valor a buscar (True o False)
+        
+        # Validación de parámetros de entrada para el método _search_assigned
+        
+        # Verifica que:
+        # 1. El operador sea '=' o '!=' (operadores válidos para campos booleanos)
+        # 2. El valor sea de tipo booleano (True o False)
+    
+        # Si alguna condición no se cumple, lanza un error
+        
+        if operator not in ('=', '!=') or not isinstance(value, bool):
+            # Lanza una excepción UserError (error visible para el usuario en Odoo)
+            # indicando que la operación de búsqueda no está soportada
+            raise UserError(("Operation not supported"))
+        # Si se busca assigned = True (registros asignados)
+        if operator == '=' and value == True:
+            # Invertimos la lógica: buscamos donde user_id NO sea False
+            operator = '!='
+        else:
+            # En cualquier otro caso (assigned = False, assigned != True, etc.)
+            # Buscamos donde user_id SÍ sea False (sin asignar)
+            operator = '='
+        # Retorna el dominio de búsqueda traducido
+        # Si assigned=True → busca user_id != False (con usuario)
+        # Si assigned=False → busca user_id = False (sin usuario)
+        return[('user_id', operator, False)]
+    
+    def _inverse_assigned(self):
+        
+        # Método inverse que permite escribir/modificar directamente el campo computed 'assigned'
+        # y que automáticamente actualice el campo relacionado 'user_id'
+    
+        # Este método se ejecuta cuando alguien asigna un valor al campo 'assigned'
+        # Por ejemplo: record.assigned = True o record.assigned = False
+        
+            for record in self:
+                # Si se desmarca 'assigned' (se pone en False)
+                if not record.assigned:
+                    # Limpia el campo user_id (lo pone en False/vacío)
+                    # Esto significa "desasignar el usuario"
+                    record.user_id = False
+                else:
+                    # Si se marca 'assigned' (se pone en True)
+                    # Asigna automáticamente el usuario actual (quien está haciendo la operación)
+                    # self.env.user es el usuario logueado en Odoo
+                    record.user_id = self.env.user
+
+    
+    # - Hacer un campo calculado que indique, dentro de un ticket, la cantidad de tickets asociados al mismo usuario.
+    tickets_count = fields.Integer(
+        string='Tickets Count',
+        compute='_compute_tickets_count'
+    )
+
+    @api.depends('user_id')
+    def _compute_tickets_count(self):
+        ticket_obj = self.env['helpdesk.ticket']
+        for record in self:
+            tickets = ticket_obj.search([('user_id', '=', record.user_id.id)])
+            record.tickets_count = len(tickets)
+
+    # - Crear un campo nombre de etiqueta y hacer un botón que cree la nueva etiqueta con ese nombre y lo asocie al ticket.
+    tag_name = fields.Char()
+
+    def create_tag(self):
+        self.ensure_one()
+        # self.write({
+        #     'tag_ids': [Command.create({'name': self.tag_name})] # Use this when there are mutiple records
+        # })
+        self.tag_ids = [Command.create({'name': self.tag_name})]  # Use this when only one record is being processed
+        # we use tags_ids cause create returns a recordset of ids
+
+    def clear_tags(self):
+        # self.write({
+        #     'tag_ids': [(5, 0, 0)]  Ancient way to clear tags odoo version 14 and before
+        # })
+        
+        # Alternative way to clear tags using Command
+        self.write({
+            'tag_ids': [Command.clear()]  # Clears all tags associated with the ticket  
+        })

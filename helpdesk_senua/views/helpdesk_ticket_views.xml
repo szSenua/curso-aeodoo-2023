@@ -22,8 +22,17 @@
                             <field name="amount_time" widget="float_time" />
                         </group>
                         <group>
+                            <field name="assigned" />
                             <field name="user_id" />
+                            <field name="tickets_count"/>
                             <field name="person_id" />
+                            <field name="tag_name" />
+                                <button string="Crear"
+                                    type="object"
+                                    name="create_tag" />
+                                <button string="Limpiar etiquetas"
+                                    type="object"
+                                    name="clear_tags" />
                             <field name="tag_ids" widget="many2many_tags" />
                         </group>
                     </group>
@@ -166,16 +175,17 @@
 
     <!-- - ## Vista calendar:
   - por fecha mostrando cada usuario asignado. -->
-  <record id="model_name_ticket_calendar" model="ir.ui.view">
-    <field name="name">helpdesk_ticket.calendar</field>
-    <field name="model">helpdesk.ticket</field>
-    <field name="arch" type="xml">
-        <calendar string="Tcikets" create="0" mode="month" date_start="date" color="user_id" event_limit="5">
-            <field name="name" />
-            <field name="user_id" avatar_field="avatar_128" />
-        </calendar>
-    </field>
-  </record>
+    <record id="model_name_ticket_calendar" model="ir.ui.view">
+        <field name="name">helpdesk_ticket.calendar</field>
+        <field name="model">helpdesk.ticket</field>
+        <field name="arch" type="xml">
+            <calendar string="Tcikets" create="0" mode="month" date_start="date" color="user_id"
+                event_limit="5">
+                <field name="name" />
+                <field name="user_id" avatar_field="avatar_128" />
+            </calendar>
+        </field>
+    </record>
 
     <!-- Vista kanban:
   - mostrar en tarjeta usuario y tiempo dedicado
@@ -314,7 +324,7 @@
 
         <!-- Available views: list first, then form -->
         <!-- Odoo 18 uses "list" instead of "tree" -->
-        <field name="view_mode">kanban,list,pivot,graph,calendar,form</field>
+        <field name="view_mode">list,kanban,pivot,graph,calendar,form</field>
 
         <!-- Message displayed when there are no tickets created -->
         <field name="help" type="html">
