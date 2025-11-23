@@ -24,15 +24,15 @@
                         <group>
                             <field name="assigned" />
                             <field name="user_id" />
-                            <field name="tickets_count"/>
-                            <field name="person_id" />
+                            <field name="tickets_count" />
+                            <field name="person_id" options="{'no_create':'True', 'no_open':'True'}" />
                             <field name="tag_name" />
-                                <button string="Crear"
-                                    type="object"
-                                    name="create_tag" />
-                                <button string="Limpiar etiquetas"
-                                    type="object"
-                                    name="clear_tags" />
+                            <button string="Crear"
+                                type="object"
+                                name="create_tag" />
+                            <button string="Limpiar etiquetas"
+                                type="object"
+                                name="clear_tags" />
                             <field name="tag_ids" widget="many2many_tags" />
                         </group>
                     </group>
@@ -52,14 +52,28 @@
                                 string="Set all as done"
                                 type="object"
                                 class="btn-primary" />
-                            <!-- <label for="actions_todo" string="To Do" /> -->
+                            <!-- 
+                            Tareas a realizar:    
+                            - En el ticket tenemos un campo action_ids, y no tenemos definida una vista para el modelo al que
+                            apunta, crear una vista embebida, y
+                            vamos a ocultar el m2o
+                            - Las etiquetas tienen unas vistas qué muestran el m2m en los tickets, hacer otra vista sin este
+                            m2m a los tickets, 
+                            hacer otra vista sin este m2m y hacer que desde el ticket se muestre la segunda vista.
+                            - Hacer que el tag_ids no pueda crear nuevos tag_ids -->
+
+                            <field name="action_ids"
+                                context="{'default_state': 'done', 
+                            'list_view_ref':'helpdesk_senua.view_helpdesk_ticket_action_list_simple', 
+                            'form_view_ref':'helpdesk_senua.view_helpdesk_ticket_action_form_simple'}" />
+                            <!-- <label for="actions_todo" string="To Do" />
                             <field name="action_ids">
                                 <list string="Actions">
                                     <field name="name" />
                                     <field name="state" />
                                 </list>
                                 <form>
-                                    <!-- Testing button to update the state -->
+                                     Testing button to update the state
                                     <button name="set_done"
                                         type="object"
                                         string="Set done"
@@ -74,7 +88,7 @@
                                         <field name="state" readonly="1" />
                                     </group>
                                 </form>
-                            </field>
+                            </field> -->
                         </page>
                     </notebook>
                 </sheet>

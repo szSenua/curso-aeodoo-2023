@@ -68,9 +68,9 @@ class HelpdeskTicket(models.Model):
     # Many to many field
     tag_ids = fields.Many2many(
         'helpdesk.ticket.tag', 
-        # relation='helpdesk_ticket_tag_rel',
-        # column1='ticket_id',
-        # column2='tag_id',
+        relation='helpdesk_ticket_tag_rel',
+        column1='ticket_id',
+        column2='tag_id',
         string='Tags')
 
     # One to many field
@@ -208,3 +208,4 @@ class HelpdeskTicket(models.Model):
         self.write({
             'tag_ids': [Command.clear()]  # Clears all tags associated with the ticket  
         })
+
