@@ -1,4 +1,4 @@
-from odoo import fields, models
+from odoo import api, fields, models
 
 # Defines a new class (model) that represents a database table in Odoo
 class HelpdeskTicketTag(models.Model):
@@ -19,3 +19,8 @@ class HelpdeskTicketTag(models.Model):
         column1='tag_id',
         column2='ticket_id',
         string='Tickets')
+    
+    @api.model
+    def _clean_tags(self):
+        tags = self.search([('ticket_ids', '=', False)])
+        tags.unlink()

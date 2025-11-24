@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- - Hacer un cron que borre los tags que no estén asignados a ningún ticket, que se ejecute una vez al día.
+    Campo numbercall modificado en la versión 18 por number_calls  -->
+    <record id="ir_cron_helpdesk_clean_tags" model="ir.cron">
+        <field name="name">Helpdesk: Clean unused tags</field>
+        <field name="model_id" ref="model_helpdesk_ticket_tag"/>
+        <field name="state">code</field>
+        <field name="code">model._clean_tags()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <!-- <field name="number_calls">-1</field> Eliminado en odoo 18 se ejecutan hasta que se desactiven manualmente -->
+        <field name="active">True</field>
+    </record>
+</odoo>

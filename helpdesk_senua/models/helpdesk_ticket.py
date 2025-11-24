@@ -1,5 +1,6 @@
-from odoo import api, Command, fields, models
+from odoo import _, api, Command, fields, models
 from odoo.exceptions import UserError
+from datetime import timedelta
 
 # Defines a new class (model) that represents a database table in Odoo
 class HelpdeskTicket(models.Model):
@@ -24,10 +25,46 @@ class HelpdeskTicket(models.Model):
     description = fields.Text()
 
     # Fecha
-    date = fields.Date()
+    # - Añadir un default para que la fecha del ticket sea la fecha de hoy
+    date = fields.Date(
+        default=fields.Date.context_today,
+    )
+
+    # Forma antigua de poner el default
+    # @api.model -> indica que el método es un método de modelo (no de instancia)
+    # def _get_default_date(self):
+    #     return fields.Date.context_today(self)
+    # date = fields.Date(
+    #     default=_get_default_date,
+    # )
 
     # Fecha y Hora límite
-    date_limit = fields.Datetime('Limit Date & Time')
+    date_limit = fields.Datetime(
+        'Limit Date & Time',
+        # compute='_compute_date_limit',
+        # inverse='_inverse_date_limit',
+    )
+
+    # - Añadir un onchange para que al indicar la fecha ponga como fecha de vencimiento un día más
+    @api.onchange('date')
+    def _onchange_date(self):
+        if self.date:
+            self.date_limit = self.date + timedelta(days=1)
+        else:
+            self.date_limit = False
+    
+    # - Lo mismo con un campo calculado
+    # @api.depends('date')
+    # def _compute_date_limit(self):
+    #     for record in self:
+    #         if record.date:
+    #             record.date_limit = record.date + timedelta(days=1)
+    #         else:
+    #             record.date_limit = False
+
+    # Inverse method for date_limit to allow manual setting
+    # def _inverse_date_limit(self):
+    #     pass
 
     # Asignado (Verdadero o Falso)
     # assigned = fields.Boolean(
@@ -85,9 +122,19 @@ class HelpdeskTicket(models.Model):
 
     color = fields.Integer('Color Index', default=0)
 
+    # - Añadir una restricción para hacer que el campo time no sea menor que 0
     amount_time = fields.Float(
         string='Amount of Time'
     )
+
+    @api.constrains('amount_time')
+    def _check_amount_time(self):
+        for record in self:
+            if record.amount_time < 0:
+                # In odoo 18 you have to import _ from odoo to use translations. In 16 version It is implicit
+                raise UserError(_("The amount of time cannot be negative."))
+
+    
 
     # Test domain
     person_id = fields.Many2one('res.partner', 
@@ -191,13 +238,27 @@ class HelpdeskTicket(models.Model):
     # - Crear un campo nombre de etiqueta y hacer un botón que cree la nueva etiqueta con ese nombre y lo asocie al ticket.
     tag_name = fields.Char()
 
+# - Modificar el botón de crear una etiqueta en el formulario de ticket para que abra una acción nueva, 
+# pasando por contexto el valor del nombre y la relación con el ticket.
     def create_tag(self):
         self.ensure_one()
         # self.write({
         #     'tag_ids': [Command.create({'name': self.tag_name})] # Use this when there are mutiple records
         # })
-        self.tag_ids = [Command.create({'name': self.tag_name})]  # Use this when only one record is being processed
+        # self.tag_ids = [Command.create({'name': self.tag_name})]  # Use this when only one record is being processed
         # we use tags_ids cause create returns a recordset of ids
+        action = {
+            'name': 'Hepldesk Ticket Tags',
+            'type': 'ir.actions.act_window',
+            'res_model': 'helpdesk.ticket.tag',
+            'view_mode': 'form',
+            'target': 'new',
+        }
+        action['context'] = {
+            'default_name': self.tag_name,
+            'default_ticket_ids': [(4, self.id)] # Link the newly created tag to this ticket. 4 is the command to link existing record
+        }
+        return action
 
     def clear_tags(self):
         # self.write({
@@ -209,3 +270,21 @@ class HelpdeskTicket(models.Model):
             'tag_ids': [Command.clear()]  # Clears all tags associated with the ticket  
         })
 
+    # function to get related actions from a object type button.
+    # This option is more common.
+    def get_related_actions(self):
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Actions',
+            'view_mode': 'list,form',
+            'res_model': 'helpdesk.ticket.action',
+            'domain': [('ticket_id', '=', self.id)],
+            'context': {'default_ticket_id': self.id},
+    }
+
+# - Hacer un botón que asigne el ticket al usuario conectado y cambie el estado a Asignado.
+    def get_assigned(self):
+        self.ensure_one()
+        self.state = 'assigned'
+        self.user_id = self.env.user

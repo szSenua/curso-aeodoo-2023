@@ -6,6 +6,20 @@
         <field name="arch" type="xml">
             <form>
                 <header>
+                    <!-- 16 version odoo -->
+                    <!-- <button string="Assign to me"
+                        name="get_assigned"
+                        type="object"
+                        states="new" /> -->
+                    <!-- 18 version odoo -->
+                    <!-- invisible instead of states and domain -->
+                    <!-- Button is invisible when the state is not 'new' -->
+                    <!-- Restrict button visibility to helpdesk managers -->
+                    <button string="Assign to me"
+                        name="get_assigned"
+                        type="object"
+                        invisible="state != 'new'" 
+                        groups="helpdesk_senua.res_groups_helpdesk_manager"/>
                     <field name="state" widget="statusbar"
                         statusbar_visible="new,assigned,in_process,pending,resolved" />
                 </header>
@@ -47,6 +61,17 @@
                             <field name="actions_todo" />
                         </page>
                         <page name="actions" string="Actions">
+                            <!-- button for call the related action at action views -->
+                            <button name="%(helpdesk_senua.helpdesk_ticket_action_related_action)d"
+                                string="Open Related Actions (type action)"
+                                type="action"
+                                class="btn-secondary mb-2" />
+                            <!-- Now same way but type object -->
+                            <button
+                                name="get_related_actions"
+                                string="Open Related Actions (type object)"
+                                type="object"
+                                class="btn-secondary mb-2" />
                             <button
                                 name="set_actions_as_done"
                                 string="Set all as done"
