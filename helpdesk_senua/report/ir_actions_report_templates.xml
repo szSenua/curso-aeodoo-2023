@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <!-- - Crear un informe de impresión para el ticket que muestre nombre, fecha, cliente y listado
+    de acciones, similar a pedido de venta. -->
+    <!-- Print Single Ticket -->
+    <template id="report_helpdesk_ticket">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <div class="oe_structure" />
+
+                        <h2 class="mt-4"> Ticket # <span t-field="doc.name" />
+                        </h2>
+                        <table class="table table-sm o_main_table table-borderless mt-4">
+                            <thead style="display: table-row-group">
+                                <tr>
+                                    <th name="th_description" class="text-start">Action</th>
+                                    <th name="th_quantity" class="text-start">State</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="doc.action_ids" t-as="action">
+                                    <tr>
+                                        <td name="td_name">
+                                            <span t-field="action.name" />
+                                        </td>
+                                        <td name="td_state">
+                                            <span t-field="action.state" />
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <!-- Print Ticket List -->
+    <template id="report_helpdesk_ticket_list">
+        <t t-call="web.html_container">
+            <t t-call="web.external_layout">
+                <div class="page">
+                    <div class="oe_structure" />
+                    <h2 class="mt-4"> Ticket List
+                    </h2>
+                    <table class="table table-sm o_main_table table-borderless mt-4">
+                        <thead style="display: table-row-group">
+                            <tr>
+                                <th name="th_name" class="text-start">Ticket Name</th>
+                                <th name="th_assigned" class="text-start">Assigned</th>
+                                <th name="th_state" class="text-start">State</th>
+                                <th name="th_date" class="text-start">Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            <t t-foreach="docs" t-as="ticket">
+                                <tr>
+                                    <td name="td_name">
+                                        <span t-field="ticket.name" />
+                                    </td>
+                                    <td name="td_assigned">
+                                        <span t-field="ticket.user_id" />
+                                    </td>
+                                    <td name="td_state">
+                                        <span t-field="ticket.state" />
+                                    </td>
+                                    <td name="td_date">
+                                        <span t-field="ticket.date" />
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </div>
+            </t>
+        </t>
+    </template>
+
+    <!-- User Card Report Template -->
+    <template id="report_user_card">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.basic_layout">
+                    <div class="page" style="page-break-after: always; height: 100%;">
+                        <div style="text-align: center; padding: 20px;">
+                            <h2 style="margin-bottom: 20px;">User # <span t-field="doc.name" /></h2>
+                            <t t-if="doc.image_1920">
+                                <img t-att-src="image_data_uri(doc.image_1920)"
+                                    style="max-width: 150px; max-height: 150px; object-fit: contain; border-radius: 50%; border: 3px solid #333;"
+                                    alt="Photo" />
+                            </t>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+
+</odoo>
