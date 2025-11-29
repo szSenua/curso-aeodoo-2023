@@ -6,6 +6,8 @@ from datetime import timedelta
 class HelpdeskTicket(models.Model):
     # Technical name of the model used internally by Odoo
     _name = 'helpdesk.ticket'
+    # Indicates that this model inherits features from mail.thread and mail.activity.mixin
+    _inherit = ['mail.thread', 'mail.activity.mixin']
     # Human-readable description of the model
     _description = 'Helpdesk Ticket'
     
@@ -121,11 +123,18 @@ class HelpdeskTicket(models.Model):
         self.action_ids.set_done()
 
     color = fields.Integer('Color Index', default=0)
-
-    # - Añadir una restricción para hacer que el campo time no sea menor que 0
+    
     amount_time = fields.Float(
         string='Amount of Time'
     )
+    # - Añadir una restricción para hacer que el campo time no sea menor que 0
+    @api.constrains('amount_time')
+    def _check_amount_time(self):
+        for record in self:
+            if record.amount_time < 0:
+                # In odoo 18 you have to import _ from odoo to use translations. In 16 version It is implicit
+                raise UserError(_("The amount of time cannot be negative."))
+    
 
     @api.constrains('amount_time')
     def _check_amount_time(self):
@@ -175,31 +184,20 @@ class HelpdeskTicket(models.Model):
         # Args:
         #     operator: operador de búsqueda ('=', '!=', etc.)
         #     value: valor a buscar (True o False)
-        
-        # Validación de parámetros de entrada para el método _search_assigned
-        
-        # Verifica que:
-        # 1. El operador sea '=' o '!=' (operadores válidos para campos booleanos)
-        # 2. El valor sea de tipo booleano (True o False)
-    
-        # Si alguna condición no se cumple, lanza un error
+
+        # Retorna un dominio de búsqueda basado en el valor de 'assigned'
+        # Si el valor es True, busca registros con user_id no vacío
+        # Si el valor es False, busca registros con user_id vacío
+        # Lanza una excepción si se usa un operador o valor no soportado
         
         if operator not in ('=', '!=') or not isinstance(value, bool):
-            # Lanza una excepción UserError (error visible para el usuario en Odoo)
-            # indicando que la operación de búsqueda no está soportada
-            raise UserError(("Operation not supported"))
-        # Si se busca assigned = True (registros asignados)
-        if operator == '=' and value == True:
-            # Invertimos la lógica: buscamos donde user_id NO sea False
-            operator = '!='
-        else:
-            # En cualquier otro caso (assigned = False, assigned != True, etc.)
-            # Buscamos donde user_id SÍ sea False (sin asignar)
-            operator = '='
-        # Retorna el dominio de búsqueda traducido
-        # Si assigned=True → busca user_id != False (con usuario)
-        # Si assigned=False → busca user_id = False (sin usuario)
-        return[('user_id', operator, False)]
+            raise UserError(_("Operation not supported"))
+        if value == True:
+            if operator == '=' :
+                operator = '!='
+            else:
+                operator = '='
+        return [('user_id', operator, False)]
     
     def _inverse_assigned(self):
         
@@ -288,3 +286,6 @@ class HelpdeskTicket(models.Model):
         self.ensure_one()
         self.state = 'assigned'
         self.user_id = self.env.user
+
+# - Añadir un campo contacto en el ticket, hacer que si creo un contacto desde el ticket se cree como tipo individual y el comercial sea el usuario asignado al ticket.
+    partner_id = fields.Many2one("res.partner", string="Partner")

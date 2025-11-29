@@ -4,22 +4,13 @@
         <field name="name">view_helpdesk_ticket_form</field>
         <field name="model">helpdesk.ticket</field>
         <field name="arch" type="xml">
-            <form>
+            <form string="Helpdesk Ticket">
                 <header>
-                    <!-- 16 version odoo -->
-                    <!-- <button string="Assign to me"
-                        name="get_assigned"
-                        type="object"
-                        states="new" /> -->
-                    <!-- 18 version odoo -->
-                    <!-- invisible instead of states and domain -->
-                    <!-- Button is invisible when the state is not 'new' -->
-                    <!-- Restrict button visibility to helpdesk managers -->
                     <button string="Assign to me"
                         name="get_assigned"
                         type="object"
-                        invisible="state != 'new'" 
-                        groups="helpdesk_senua.res_groups_helpdesk_manager"/>
+                        invisible="state != 'new'"
+                        groups="helpdesk_senua.res_groups_helpdesk_manager" />
                     <field name="state" widget="statusbar"
                         statusbar_visible="new,assigned,in_process,pending,resolved" />
                 </header>
@@ -34,6 +25,8 @@
                             <field name="date" optional="show" />
                             <field name="date_limit" optional="hide" />
                             <field name="amount_time" widget="float_time" />
+                            <field name="partner_id"
+                                context="{'default_company_type': 'person', 'default_user_id': user_id, 'default_search_user_id': user_id}" />
                         </group>
                         <group>
                             <field name="assigned" />
@@ -52,21 +45,16 @@
                     </group>
                     <notebook>
                         <page name="description" string="Description">
-
-                            <!-- <label for="description" string="Description" /> -->
                             <field name="description" />
                         </page>
                         <page name="to_do" string="To Do">
-                            <!-- <label for="actions_todo" string="To Do" /> -->
                             <field name="actions_todo" />
                         </page>
                         <page name="actions" string="Actions">
-                            <!-- button for call the related action at action views -->
                             <button name="%(helpdesk_senua.helpdesk_ticket_action_related_action)d"
                                 string="Open Related Actions (type action)"
                                 type="action"
                                 class="btn-secondary mb-2" />
-                            <!-- Now same way but type object -->
                             <button
                                 name="get_related_actions"
                                 string="Open Related Actions (type object)"
@@ -77,46 +65,15 @@
                                 string="Set all as done"
                                 type="object"
                                 class="btn-primary" />
-                            <!-- 
-                            Tareas a realizar:    
-                            - En el ticket tenemos un campo action_ids, y no tenemos definida una vista para el modelo al que
-                            apunta, crear una vista embebida, y
-                            vamos a ocultar el m2o
-                            - Las etiquetas tienen unas vistas qué muestran el m2m en los tickets, hacer otra vista sin este
-                            m2m a los tickets, 
-                            hacer otra vista sin este m2m y hacer que desde el ticket se muestre la segunda vista.
-                            - Hacer que el tag_ids no pueda crear nuevos tag_ids -->
-
                             <field name="action_ids"
                                 context="{'default_state': 'done', 
-                            'list_view_ref':'helpdesk_senua.view_helpdesk_ticket_action_list_simple', 
-                            'form_view_ref':'helpdesk_senua.view_helpdesk_ticket_action_form_simple'}" />
-                            <!-- <label for="actions_todo" string="To Do" />
-                            <field name="action_ids">
-                                <list string="Actions">
-                                    <field name="name" />
-                                    <field name="state" />
-                                </list>
-                                <form>
-                                     Testing button to update the state
-                                    <button name="set_done"
-                                        type="object"
-                                        string="Set done"
-                                        class="btn-primary" />
-
-                                    <button name="set_todo"
-                                        type="object"
-                                        string="Set todo"
-                                        class="btn-primary" />
-                                    <group>
-                                        <field name="name" />
-                                        <field name="state" readonly="1" />
-                                    </group>
-                                </form>
-                            </field> -->
+                        'list_view_ref':'helpdesk_senua.view_helpdesk_ticket_action_list_simple', 
+                        'form_view_ref':'helpdesk_senua.view_helpdesk_ticket_action_form_simple'}" />
                         </page>
                     </notebook>
                 </sheet>
+                <!-- Simplified version of the chatter for 18 version Odoo -->
+                <chatter />
             </form>
         </field>
     </record>
@@ -326,7 +283,7 @@
 
                             <!-- Date -->
                             <div class="text-muted mt-2">
-                                <i class="fa fa-calendar me-1" />
+                                <i class="fa fa-calendar me-1" title="Date" />
                                 <field name="date" />
                             </div>
 
@@ -380,6 +337,6 @@
     <menuitem id="helpdesk_ticket_open"
         name="Tickets"
         sequence="10"
-        parent="helpdesk_menu"
+        parent="helpdesk_senua.helpdesk_menu"
         action="helpdesk_ticket_action" />
 </odoo>
